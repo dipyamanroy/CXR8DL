@@ -1,40 +1,31 @@
 import os
 import shutil
 
-def collect_png_images(root_path, target_folder):
-    # Ensure the target folder exists
-    if not os.path.exists(target_folder):
-        os.makedirs(target_folder)
+def copy_png_images(source_dir, destination_dir):
+    # Ensure the destination directory exists
+    if not os.path.exists(destination_dir):
+        os.makedirs(destination_dir)
 
-    # Traverse all directories and subdirectories
-    for dirpath, _, filenames in os.walk(root_path):
-        for filename in filenames:
-            if filename.lower().endswith('.png'):
-                # Full path of the current file
-                file_path = os.path.join(dirpath, filename)
-
-                # Destination path for the file
-                destination_path = os.path.join(target_folder, filename)
-
-                # If the file already exists at the destination, append a unique number
-                count = 1
-                base, ext = os.path.splitext(filename)
-                while os.path.exists(destination_path):
-                    new_filename = f"{base}_{count}{ext}"
-                    destination_path = os.path.join(target_folder, new_filename)
-                    count += 1
-
-                # Move the file
-                shutil.move(file_path, destination_path)
-                print(f"Moved: {file_path} -> {destination_path}")
+    # Walk through the source directory and its subdirectories
+    for root, dirs, files in os.walk(source_dir):
+        for file in files:
+            if file.lower().endswith('.png'):
+                # Construct the full file path
+                full_file_path = os.path.join(root, file)
+                
+                # Construct the destination path
+                destination_path = os.path.join(destination_dir, file)
+                
+                # Copy the file to the destination directory
+                shutil.copy2(full_file_path, destination_path)
+                print(f"Copied: {full_file_path} -> {destination_path}")
 
 if __name__ == "__main__":
-    root_directory = input("Enter the root directory path: ").strip()
-    target_directory = os.path.join(root_directory, "collected_pngs")
-
-    # Ensure the root path exists
-    if not os.path.isdir(root_directory):
-        print(f"The directory {root_directory} does not exist.")
-    else:
-        collect_png_images(root_directory, target_directory)
-        print("PNG collection complete.")
+    # Specify the source directory (where to look for .png files)
+    source_directory = "data/CXR8/images"
+    
+    # Specify the destination directory (where to copy the .png files)
+    destination_directory = "data/CXR8/all_images"
+    
+    # Call the function to copy the .png files
+    copy_png_images(source_directory, destination_directory)
